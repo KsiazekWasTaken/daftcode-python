@@ -2,6 +2,7 @@ from cmath import acos
 from math import sqrt
 from math import pi
 from math import fabs
+from math import cos, sin, atan2
 
 EPS = 0.0000001
 
@@ -64,6 +65,11 @@ class Vertex:
         self.id = _id
         self.p = _p
 
+    def __eq__(self, other):
+        if isinstance(self, other.__class__):
+            return self.id == other.id
+        return False
+
 
 class Poly:
     def __init__(self, _id, _vertices):
@@ -74,7 +80,7 @@ class Poly:
     def contains(self, vertex_a):
         res = self.contains_faster(vertex_a.p)
         if res:
-            self.tags.add(vertex_a.p)
+            self.tags.add(vertex_a.id)
         return res
 
     def contains_wn(self, point):
@@ -170,4 +176,101 @@ def closest_pair(x):
             if distance(p, q) < min_d:
                 min_d = distance(p, q)
                 res = p, q
+    return res
+
+
+def closest_non_intersecting(o1, o2):
+    p0 = o1.mid
+    p1 = o2.mid
+    r1 = o1.r
+    r2 = o2.r
+
+    theta = atan2(p1[1]-p0[1], p1[0]-p0[0])
+    p2 = [0.0, 0.0]
+    p3 = [0.0, 0.0]
+    p4 = [0.0, 0.0]
+    p5 = [0.0, 0.0]
+    p3[0] = p0[0] - r1 * cos(theta)
+    p3[1] = p0[1] - r1 * sin(theta)
+    p2[0] = p0[0] + r1 * cos(theta)
+    p2[1] = p0[1] + r1 * sin(theta)
+    first2 = [p2, p3]
+    theta = atan2(p0[1]-p1[1], p0[0]-p1[0])
+    p4[0] = p1[0] - r2 * cos(theta)
+    p4[1] = p1[1] - r2 * sin(theta)
+    p5[0] = p1[0] + r2 * cos(theta)
+    p5[1] = p1[1] + r2 * sin(theta)
+    second2 = [p4, p5]
+    res = None, None
+    best = float("inf")
+    for i in range(0, len(first2)):
+        pp1 = first2[i]
+        for j in range(0, len(second2)):
+            pp2 = second2[j]
+            if distance(pp1, pp2) < best:
+                best = distance(pp1, pp2)
+                res = [pp1, pp2]
+    return res
+
+
+# determinant of Nx2 matrix
+def det(mat):
+    res = 0.0
+    aux = 0
+    for i in range(0, len(mat)):
+        a1 = mat[i][0]
+        a2 = mat[(i+1)%len(mat)][1]
+        tmp = a1*a2
+        res += tmp
+    for i in range(0, len(mat)):
+        a1 = mat[i][1]
+        a2 = mat[(i+1)%len(mat)][0]
+        res -= a1*a2
+    return fabs(res/2)
+
+
+def best_4(x):
+    min_d = float("inf")
+    res = None, None, None, None
+    if len(x) < 2:
+        return res
+    for i in range(0, len(x)-1):
+        p = x[i]
+        if p is None: continue
+        for j in range(i+1, len(x)):
+            q = x[j]
+            if q is None: continue
+            for k in range(j+1, len(x)):
+                r = x[k]
+                if r is None:
+                    dd = distance(p, q)
+                    if dd**2 < min_d:
+                        min_d = dd
+                        res = p,q
+                else:
+                    for l in range(k+1, len(x)):
+                        s = x[l]
+                        dd = 0.0
+                        if s is None:
+                            a = [p,q,r]
+                            a.sort(key=lambda tup: tup[0])
+                            a.sort(key=lambda tup: tup[1])
+                            a1 =[a[0], a[1], a[2]]
+                            dd = fabs(det(a1))*2
+                            if dd < min_d:
+                                min_d = dd
+                                res = p,q,r
+                        else:
+                            a = [p,q,r,s]
+                            a.sort(key=lambda tup: tup[0])
+                            a.sort(key=lambda tup: tup[1])
+                            a1 =[a[0], a[1], a[3], a[2]]
+                            # dd = distance(p, q) + distance()
+                            dd = fabs(det(a1))
+                            if dd < min_d:
+                                min_d = dd
+                                res = p,q,r,s
+            # if distance(p, q) < min_d:
+            #     min_d = distance(p, q)
+            #     res = p, q
     return res
