@@ -75,6 +75,13 @@ def estimate_more_experimental(o):
         if p1 is not None:
             r.append((p1, p2))
         else:
+            # the idea is that, if the circles don't intersect
+            # we're losing a lot of information
+            # try to fake the information by returning the two closest points
+            # on the circles
+            # it is heavily biased towards the center however
+            # and probably needs some adjustments
+            # @TODO tomorrow
             r.append(closest_non_intersecting(o1, o2))
     o1 = o[len(o)-1]
     o2 = o[0]
@@ -95,6 +102,7 @@ def estimate_more_experimental(o):
 
 
 def estimate_experimental(o):
+# @TODO find out why this method doesn't work
     r = []
     for i in range(0, len(o)-1):
         o1 = o[i]
@@ -173,7 +181,7 @@ for zz in range(0, len(python_data)):
     id = python_data[zz][0]
     id = int(id)
     Azz = [Circle(anchors[i], dists[i]) for i in range(0, len(dists))]
-    res = estimate(Azz)
+    res = estimate_more_experimental(Azz)
     tags.append(Vertex(id, res))
     # print(res)
     for j in range(0, 4):
