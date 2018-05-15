@@ -102,8 +102,8 @@ tags_python = []
 for data in python_data:
     dists = data[1:]
     id = int(data[0])
-    Azz = [Circle(anchors[i], dists[i]) for i in range(0, len(dists))]
-    res = estimate(Azz)
+    c = [Circle(anchors[i], dists[i]) for i in range(0, len(dists))]
+    res = estimate(c)
     tags.append(Vertex(id, res))
 
 pts = PointsContainer(tags)
