@@ -8,6 +8,9 @@ class Polygon:
         self.vertices = _vertices
         self.tags = set()
 
+    def reset(self):
+        self.tags = set()
+
     def contains(self, vertex_a):
         res = self.contains_wn_improved(vertex_a.p)
         if res:

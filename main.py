@@ -97,15 +97,6 @@ tags_cpp = []
 for row in cpp_data:
     tags_cpp.append(Vertex(int(row[0]), (row[1], row[2])))
 
-pts = PointsContainer(tags_cpp)
-pts.test(polygons)
-
-max_loss = 0.0
-max_error = 0.0
-total_error = 0.0
-total_loss = 0.0
-which = -1
-
 tags_python = []
 
 for data in python_data:
@@ -114,6 +105,9 @@ for data in python_data:
     Azz = [Circle(anchors[i], dists[i]) for i in range(0, len(dists))]
     res = estimate(Azz)
     tags.append(Vertex(id, res))
+
+pts = PointsContainer(tags)
+pts.test(polygons)
 
 for p in polygons:
     print("Poly "+str(p.id)+" contains")
@@ -126,14 +120,6 @@ difference_set = poly_1_set - poly_2_set
 print("In poly 1 but not in poly 2:")
 for el in difference_set:
     print(el)
-
-pts = PointsContainer(tags)
-pts.test(polygons)
-
-for p in polygons:
-    print("Poly "+str(p.id)+" contains")
-    for el in p.tags:
-        print(el)
 
 fig, ax = plt.subplots()
 patches = []
